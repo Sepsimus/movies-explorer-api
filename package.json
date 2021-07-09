@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/Sepsimus/movies-explorer-api#readme",
   "dependencies": {
-    "editorconfig": "^0.15.3"
+    "editorconfig": "^0.15.3",
+    "mongoose": "^5.13.2",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "eslint": "^7.30.0",
