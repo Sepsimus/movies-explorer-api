@@ -20,8 +20,16 @@
   },
   "homepage": "https://github.com/Sepsimus/movies-explorer-api#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "celebrate": "^15.0.0",
+    "dotenv": "^10.0.0",
     "editorconfig": "^0.15.3",
+    "express": "^4.17.1",
+    "joi-oid": "^1.1.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.2",
+    "nodemon": "^2.0.12",
     "validator": "^13.6.0"
   },
   "devDependencies": {
