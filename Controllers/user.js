@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../Models/user');
-const { NotFoundError } = require('../components/NotFoundError');
 const { NotValidData } = require('../components/NotValidData');
 const { Unauthorized } = require('../components/Unauthorized');
 const { Conflict } = require('../components/Conflict');
@@ -12,7 +11,7 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'Ошибка сервера ' }));
+    .catch((err) => next(err));
 };
 
 module.exports.patchMe = (req, res, next) => {
@@ -23,7 +22,16 @@ module.exports.patchMe = (req, res, next) => {
       runValidators: true,
     })
     .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'Ошибка сервера ' }));
+    .catch((err) => {
+      if (err.name === 'MongoError' && err.code === 11000) {
+        throw new Conflict('Пользователь с таким email уже создан');
+      }
+      if (err.name === 'ValidationError') {
+        throw new NotValidData('Переданы неккоретные данные');
+      }
+      next(err);
+    })
+    .catch((err) => next(err));
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -33,7 +41,7 @@ module.exports.createUser = (req, res, next) => {
   }
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
-      email, password: hash, name: req.body.name, about: req.body.about, avatar: req.body.avatar,
+      email, password: hash, name: req.body.name,
     }))
     .then(() => res.status(200).send({ message: 'Пользователь создан' }))
     .catch((err) => {

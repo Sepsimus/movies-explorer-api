@@ -1,9 +1,12 @@
 const Movie = require('../Models/movie');
+const { NotFoundError } = require('../components/NotFoundError');
+const { NotValidData } = require('../components/NotValidData');
+const { MethodNotAllowed } = require('../components/MethodNotAllowed');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
     .then((movie) => res.status(200).send({ data: movie }))
-    .catch((err) => res.status(500).send({ message: 'Ошибка сервера' }));
+    .catch((err) => next(err));
 };
 
 module.exports.postMovie = (req, res, next) => {
@@ -20,7 +23,6 @@ module.exports.postMovie = (req, res, next) => {
     nameRU,
     nameEN,
   } = req.body;
-//  const { owner } = req.user._id;
   Movie.create({
     country,
     director,
@@ -36,23 +38,34 @@ module.exports.postMovie = (req, res, next) => {
     nameEN,
   })
     .then((movie) => res.status(200).send({ data: movie }))
-    .catch((err) => res.status(500).send(err));
+    .catch((err) => {
+      res.send(err);
+      if (err.name === 'ValidationError') {
+        throw new NotValidData('Переданы неккоретные данные');
+      }
+      next(err);
+    })
+    .catch((err) => next(err));
 };
 
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
     .then((movie) => {
       if (!movie) {
-        res.status(500).send({ message: 'Ошибка сервера' });
-        return;
+        throw new NotFoundError('Фильм не найдена');
       }
       if (movie.owner != req.user._id) {
-        res.status(500).send({ message: 'Ошибка сервера' });
-        return;
-      }else{
-      Movie.findByIdAndRemove(req.params.movieId)
-        .then(() => res.status(200).send({ message: 'Фильм удален' }));
+        throw new MethodNotAllowed('Метод не дозволен');
+      } else {
+        Movie.findByIdAndRemove(req.params.movieId)
+          .then(() => res.status(200).send({ message: 'Фильм удален' }));
       }
     })
-    .catch((err) => res.status(500).send({ message: 'Ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new NotValidData('Переданы неккоретные данные');
+      }
+      next(err);
+    })
+    .catch((err) => next(err));
 };
