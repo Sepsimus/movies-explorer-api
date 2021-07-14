@@ -54,11 +54,10 @@ module.exports.deleteMovie = (req, res, next) => {
       if (!movie) {
         throw new NotFoundError('Фильм не найдена');
       }
-      if (movie.owner != req.user._id) {
+      if (movie.owner.toString() !== req.user._id.toString()) {
         throw new MethodNotAllowed('Метод не дозволен');
       } else {
-        Movie.findByIdAndRemove(req.params.movieId)
-          .then(() => res.status(200).send({ message: 'Фильм удален' }));
+        return movie.remove().then(() => res.status(200).send({ message: 'Фильм удален' }));
       }
     })
     .catch((err) => {

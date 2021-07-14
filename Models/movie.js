@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-
-const regexURL = /^(ftp|http|https):\/\/[^ "]+$/;
+const { isURL } = require('validator');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -27,7 +26,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(v) {
-        return regexURL.test(v);
+        return isURL(v);
       },
       message: 'Неккоректная ссылка',
     },
@@ -37,7 +36,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(v) {
-        return regexURL.test(v);
+        return isURL(v);
       },
       message: 'Неккоректная ссылка',
     },
@@ -47,7 +46,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(v) {
-        return regexURL.test(v);
+        return isURL(v);
       },
       message: 'Неккоректная ссылка',
     },
@@ -59,7 +58,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   movieId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     required: true,
   },
   nameRU: {

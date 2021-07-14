@@ -8,6 +8,9 @@ const { createUser, login } = require('./Controllers/user');
 const { auth } = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { NotFoundError } = require('./components/NotFoundError');
+const { errorHandler } = require('./middlewares/centralizedErrorHandler');
+
+const { DB_LINK, NODE_ENV } = process.env;
 
 const app = express();
 
@@ -36,25 +39,21 @@ app.use('/signup', celebrate({
   next();
 }); */
 
-app.use('/users', auth, require('./Routes/user'));
+app.use(auth, require('./Routes/user'));
 
-app.use('/movies', auth, require('./Routes/movie'));
-
-app.use(errorLogger);
-
-app.use(errors());
+app.use(auth, require('./Routes/movie'));
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка Сервера' : message });
-  next();
-});
+app.use(errorLogger);
 
-mongoose.connect('mongodb://localhost:27017/movie-explorer', {
+app.use(errors());
+
+app.use(errorHandler);
+
+mongoose.connect(NODE_ENV === 'production' ? DB_LINK : 'mongodb://localhost:27017/movie-explorer', {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,
