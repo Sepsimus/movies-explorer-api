@@ -34,13 +34,13 @@ const movieSchema = new mongoose.Schema({
   },
   trailer: {
     type: String,
-    validate: {
+  /*  validate: {
       validator(v) {
         return isURL(v);
       },
       message: 'Неккоректная ссылка',
     },
-    required: true,
+    required: true, */
   },
   thumbnail: {
     type: String,

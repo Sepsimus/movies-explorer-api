@@ -10,7 +10,7 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.status(200).send(user))
     .catch((err) => next(err));
 };
 
@@ -21,7 +21,7 @@ module.exports.patchMe = (req, res, next) => {
       new: true,
       runValidators: true,
     })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
         throw new Conflict('Пользователь с таким email уже создан');

@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const { celebrate, errors } = require('celebrate');
 const Joi = require('joi-oid');
@@ -13,6 +14,11 @@ const { errorHandler } = require('./middlewares/centralizedErrorHandler');
 const { DB_LINK, NODE_ENV } = process.env;
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true,
+}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
