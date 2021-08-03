@@ -5,7 +5,7 @@ const { MethodNotAllowed } = require('../components/MethodNotAllowed');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
-    .then((movie) => res.status(200).send({ data: movie }))
+    .then((movie) => res.status(200).send(movie))
     .catch((err) => next(err));
 };
 

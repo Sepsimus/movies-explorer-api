@@ -19,12 +19,13 @@ router.post('/movies', celebrate({
       }
       return helpers.message('Некорректная ссылка image');
     }),
-    trailer: Joi.string().required().custom((value, helpers) => {
+    trailer: Joi.string().required(),
+    /* .custom((value, helpers) => {
       if (isURL(value)) {
         return value;
       }
       return helpers.message('Некорректная ссылка trailer');
-    }),
+    }), */
     thumbnail: Joi.string().required().custom((value, helpers) => {
       if (isURL(value)) {
         return value;
