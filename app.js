@@ -16,7 +16,7 @@ const { DB_LINK, NODE_ENV } = process.env;
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3001',
+  origin: 'https://kostya2120.diplom.nomoredomains.club',
   credentials: true,
 }));
 
